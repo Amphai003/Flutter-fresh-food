@@ -8,7 +8,8 @@ import '../widgets/bottom_nav_bar_widget.dart'; // Import your new bottom nav ba
 import 'blog_screen.dart'; // Import the new blog screen
 import 'cart_screen.dart'; // Import the new cart screen
 import 'profile_screen.dart'; // Import the new profile screen
-
+import '../providers/cart_provider.dart';
+import 'package:provider/provider.dart';
 
 class GroceryHomeScreen extends StatefulWidget {
   @override
@@ -147,85 +148,86 @@ class _GroceryHomeScreenState extends State<GroceryHomeScreen> {
   }
 
   void _handleVegetableBuy(VegetableItem vegetable) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Row(
-            children: [
-              Text(vegetable.image, style: const TextStyle(fontSize: 24)),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Add to Cart',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            Text(vegetable.image, style: const TextStyle(fontSize: 24)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Add to Cart',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                vegetable.name,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                vegetable.description,
-                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Text(
-                    'Price: ₭${vegetable.price.toStringAsFixed(0)}', // Ensure price is formatted nicely
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                    ),
-                  ),
-                  const Spacer(),
-                  Row(
-                    children: [
-                      const Icon(Icons.star, color: Colors.orange, size: 16),
-                      const SizedBox(width: 4),
-                      Text('${vegetable.rating}'),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-                _showSuccessSnackBar('${vegetable.name} added to cart!');
-                // Here you would add the vegetable to your actual cart state/model
-              },
-              child: const Text('Add to Cart'),
             ),
           ],
-        );
-      },
-    );
-  }
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              vegetable.name,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              vegetable.description,
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Text(
+                  'Price: ₭${vegetable.price.toStringAsFixed(0)}',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+                const Spacer(),
+                Row(
+                  children: [
+                    const Icon(Icons.star, color: Colors.orange, size: 16),
+                    const SizedBox(width: 4),
+                    Text('${vegetable.rating}'),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: () {
+              // Add the item to the cart using the CartProvider
+              Provider.of<CartProvider>(context, listen: false).addItem(vegetable);
+              Navigator.of(context).pop();
+              _showSuccessSnackBar('${vegetable.name} added to cart!');
+            },
+            child: const Text('Add to Cart'),
+          ),
+        ],
+      );
+    },
+  );
+}
 
   void _handleFruitTap(FruitItem fruit) {
     _showSuccessSnackBar('${fruit.name} selected!');

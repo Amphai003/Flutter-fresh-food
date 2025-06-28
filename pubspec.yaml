@@ -41,6 +41,7 @@ dependencies:
   cached_network_image: ^3.3.1
   flutter_rating_bar: ^4.0.0
   google_fonts: ^6.1.0
+  intl: ^0.19.0 # Add this line
 
 dev_dependencies:
   flutter_test:

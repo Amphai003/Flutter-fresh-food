@@ -1,7 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Import provider for state management
-import '../providers/cart_provider.dart'; // Import your CartProvider
+// screens/cart_screen.dart
 
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/cart_provider.dart';
+import 'payment_screen.dart'; // Import your PaymentScreen
+import 'receipt_screen.dart'; // Import your new ReceiptScreen
 
 class CartScreen extends StatelessWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -17,11 +20,21 @@ class CartScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history, color: Colors.black),
+            onPressed: () {
+              // Navigate to the ReceiptScreen
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (ctx) => const ReceiptScreen()),
+              );
+            },
+            tooltip: 'View Orders',
+          ),
+        ],
       ),
-      // Consumer listens for changes in CartProvider and rebuilds its child
       body: Consumer<CartProvider>(
         builder: (context, cart, child) {
-          // If the cart is empty, show a message
           if (cart.items.isEmpty) {
             return Center(
               child: Column(
@@ -43,7 +56,6 @@ class CartScreen extends StatelessWidget {
               ),
             );
           }
-          // If the cart has items, display them and the total
           return Column(
             children: [
               Expanded(
@@ -167,18 +179,13 @@ class CartScreen extends StatelessWidget {
                       width: double.infinity, // Make button fill width
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          // Payment logic goes here.
-                          // In a real app, this would navigate to a payment screen
-                          // or trigger a payment gateway integration.
+                          // Only proceed to payment if the cart is not empty
                           if (cart.items.isNotEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Proceeding to payment! (Demo)'),
-                                backgroundColor: Colors.blueAccent,
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (ctx) => PaymentScreen(totalAmount: cart.totalPrice),
                               ),
                             );
-                            // Optionally clear the cart after "successful" payment:
-                            // cart.clearCart();
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
